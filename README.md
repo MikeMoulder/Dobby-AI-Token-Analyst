@@ -1,8 +1,9 @@
-# 🧙‍♂️ Dobby AI - Advanced Solana Token Analyzer
+# Dobby AI - Advanced Solana Token Analyzer
 
 A sleek, real-time token analysis tool that leverages neural networks to provide comprehensive investment insights for Solana tokens. Built with modern web technologies and powered by the Sentient AI Dobby model.
 
 ![Dobby AI Screenshot](screenshot.png)
+![Dobby AI Screenshot](screenshot2.png)
 
 ## ✨ Features
 
@@ -173,7 +174,6 @@ Contributions are welcome! Please feel free to submit issues, feature requests, 
 
 - Create an issue for bugs or feature requests
 - Follow [@moulderofweb3](https://twitter.com/moulderofweb3) for updates
-- Join our community discussions
 
 ## 🌟 Roadmap
 
