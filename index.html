@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dobby AI - Advanced Token Analysis</title>
+
+  <link rel="icon" type="image/png" href="dobby-logo.png">
+<link rel="shortcut icon" type="image/png" href="dobby-logo.png">
+<link rel="apple-touch-icon" href="dobby-logo.png">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    
+    :root {
+      --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      --dark-bg: #0f0f23;
+      --card-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --text-primary: #ffffff;
+      --text-secondary: #a0a9c0;
+      --text-muted: #6b7280;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--dark-bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+    
+    /* Modern animated background with mesh gradient */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 25% 25%, #667eea20 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, #f093fb20 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, #4facfe20 0%, transparent 50%);
+      animation: meshMove 20s ease-in-out infinite alternate;
+      z-index: -2;
+    }
+    
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        linear-gradient(45deg, transparent, rgba(102, 126, 234, 0.03), transparent),
+        linear-gradient(-45deg, transparent, rgba(240, 147, 251, 0.03), transparent);
+      animation: gradientShift 15s ease-in-out infinite alternate;
+      z-index: -1;
+    }
+    
+    @keyframes meshMove {
+      0% { transform: translate(-20px, -20px) rotate(0deg); }
+      100% { transform: translate(20px, 20px) rotate(1deg); }
+    }
+    
+    @keyframes gradientShift {
+      0% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+      position: relative;
+    }
+    
+    /* Floating orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      background: var(--primary-gradient);
+      filter: blur(40px);
+      opacity: 0.3;
+      animation: float 10s ease-in-out infinite;
+      pointer-events: none;
+    }
+    
+    .orb:nth-child(1) {
+      width: 300px;
+      height: 300px;
+      top: 10%;
+      left: 80%;
+      animation-delay: 0s;
+    }
+    
+    .orb:nth-child(2) {
+      width: 200px;
+      height: 200px;
+      top: 60%;
+      left: 10%;
+      animation-delay: 3s;
+      background: var(--secondary-gradient);
+    }
+    
+    .orb:nth-child(3) {
+      width: 150px;
+      height: 150px;
+      top: 30%;
+      left: 60%;
+      animation-delay: 6s;
+      background: var(--accent-gradient);
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) translateX(0px); }
+      33% { transform: translateY(-30px) translateX(20px); }
+      66% { transform: translateY(20px) translateX(-20px); }
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 4rem;
+      position: relative;
+    }
+    
+    .logo-container {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 120px;
+      height: 120px;
+      border-radius: 24px;
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .logo-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--primary-gradient);
+      opacity: 0.1;
+      animation: pulse 3s ease-in-out infinite;
+    }
+    
+    .logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      z-index: 1;
+      animation: logoFloat 3s ease-in-out infinite;
+      object-fit: cover;
+    }
+    
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-5px); }
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 0.1; }
+      50% { opacity: 0.3; }
+    }
+    
+    .title {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 700;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+    
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 1.25rem;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+    }
+    
+    .input-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .input-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+      animation: shimmer 3s infinite;
+    }
+    
+    @keyframes shimmer {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+    
+    .input-group {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .input-wrapper {
+      flex: 1;
+      position: relative;
+    }
+    
+    .input-field {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      border: 2px solid transparent;
+      border-radius: 16px;
+      padding: 1.25rem 1.5rem;
+      color: var(--text-primary);
+      font-size: 1rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 500;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(10px);
+      outline: none;
+    }
+    
+    .input-field::placeholder {
+      color: var(--text-muted);
+    }
+    
+    .input-field:focus {
+      background: rgba(0, 0, 0, 0.6);
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+    
+    .analyze-btn {
+      background: var(--primary-gradient);
+      border: none;
+      border-radius: 16px;
+      padding: 1.25rem 2rem;
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: 'Space Grotesk', sans-serif;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      min-width: 140px;
+    }
+    
+    .analyze-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.6s;
+    }
+    
+    .analyze-btn:hover::before {
+      transform: translateX(100%);
+    }
+    
+    .analyze-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+    }
+    
+    .analyze-btn:disabled {
+      background: rgba(255, 255, 255, 0.1);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .results-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      min-height: 400px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .results-card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: var(--primary-gradient);
+      border-radius: 24px;
+      z-index: -1;
+      opacity: 0.1;
+      animation: borderGlow 4s ease-in-out infinite alternate;
+    }
+    
+    @keyframes borderGlow {
+      0% { opacity: 0.1; }
+      100% { opacity: 0.3; }
+    }
+    
+    .results-content {
+      padding: 2.5rem;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 300px;
+      text-align: center;
+    }
+    
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 3px solid rgba(102, 126, 234, 0.2);
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1.5rem;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .loading-subtext {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+    
+    .idle-state {
+      text-align: center;
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .idle-icon {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      opacity: 0.6;
+    }
+    
+    .idle-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text-secondary);
+    }
+    
+    .idle-subtitle {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+    
+    .analysis-section {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid;
+      position: relative;
+      backdrop-filter: blur(10px);
+    }
+    
+    .analysis-section:nth-child(odd) { border-left-color: #667eea; }
+    .analysis-section:nth-child(even) { border-left-color: #f093fb; }
+    .analysis-section:nth-child(3n) { border-left-color: #4facfe; }
+    
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .section-content {
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    
+    .verdict-card {
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 20px;
+      padding: 2rem;
+      text-align: center;
+      font-weight: 600;
+      font-size: 1.25rem;
+      margin-top: 2rem;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(20px);
+      border: 2px solid;
+    }
+    
+    .verdict-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+      animation: verdictShine 3s infinite;
+    }
+    
+    @keyframes verdictShine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    
+    .verdict-buy { 
+      border-color: #10b981;
+      color: #10b981;
+      background: rgba(16, 185, 129, 0.1);
+    }
+    .verdict-hold { 
+      border-color: #f59e0b;
+      color: #f59e0b;
+      background: rgba(245, 158, 11, 0.1);
+    }
+    .verdict-avoid { 
+      border-color: #ef4444;
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+    }
+    
+    .debug-panel {
+      background: rgba(239, 68, 68, 0.05);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 12px;
+      padding: 1rem;
+      margin: 1rem 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: #ef4444;
+      backdrop-filter: blur(10px);
+    }
+    
+    .debug-panel.success {
+      background: rgba(16, 185, 129, 0.05);
+      border-color: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 5rem;
+      padding: 2rem 0;
+      border-top: 1px solid var(--glass-border);
+    }
+    
+    .footer-text {
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+    
+    .footer-link {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    
+    .footer-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--primary-gradient);
+      transition: width 0.3s ease;
+    }
+    
+    .footer-link:hover {
+      color: #764ba2;
+    }
+    
+    .footer-link:hover::after {
+      width: 100%;
+    }
+    
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+      
+      .title {
+        font-size: 2.5rem;
+      }
+      
+      .input-group {
+        flex-direction: column;
+      }
+      
+      .analyze-btn {
+        width: 100%;
+      }
+      
+      .orb {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="orb"></div>
+  <div class="orb"></div>
+  <div class="orb"></div>
+
+  <div class="container">
+    <div class="header">
+      <div class="logo-container">
+        <img src="dobby-logo.png" alt="Dobby AI Logo" class="logo">
+      </div>
+      <h1 class="title">Dobby AI</h1>
+      <p class="subtitle">Advanced Neural Token Analyst</p>
+    </div>
+    
+    <div class="input-card">
+      <div class="input-group">
+        <div class="input-wrapper">
+          <input 
+            type="text" 
+            id="tokenInput" 
+            class="input-field"
+            placeholder="Enter Solana Token Address (e.g., EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v)"
+          >
+        </div>
+        <button onclick="analyze()" id="analyzeBtn" class="analyze-btn">
+          ⚡ ANALYZE
+        </button>
+      </div>
+    </div>
+
+    <div id="debugOutput" class="debug-panel" style="display: none;"></div>
+    
+    <div class="results-card">
+      <div class="results-content" id="output">
+        <div class="idle-state">
+          <div class="idle-icon">🧙‍♂️</div>
+          <div class="idle-title">Dobby AI Ready</div>
+          <div class="idle-subtitle">Enter a Solana token address to begin advanced analysis</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p class="footer-text">Powered by Sentient AI Dobby Model</p>
+      <a href="https://twitter.com/moulderofweb3" target="_blank" class="footer-link">
+        Built by rex (moulderofweb3)
+      </a>
+    </div>
+  </div>
+
+  <script>
+    const DOBBY_KEY = "fw_3ZRfi3Krcv5qJd58E8nCzeYM";
+    
+    function log(message, type = 'info') {
+      const debug = document.getElementById("debugOutput");
+      const timestamp = new Date().toLocaleTimeString();
+      const classes = type === 'error' ? 'debug-panel' : type === 'success' ? 'debug-panel success' : 'debug-panel';
+      debug.className = classes;
+      debug.style.display = 'block';
+      debug.innerHTML = `<strong>[${timestamp}]</strong> ${message}`;
+      console.log(`[${timestamp}] ${message}`);
+    }
+
+    async function fetchDexScreenerData(tokenAddress) {
+      log(`🔍 Fetching DexScreener data for: ${tokenAddress}`);
+      
+      const url = `https://api.dexscreener.com/token-pairs/v1/solana/${tokenAddress}`;
+      
+      try {
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: { 
+            "Accept": "*/*"
+          }
+        });
+
+        log(`📡 DexScreener Response: ${response.status} ${response.statusText}`);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          log(`❌ DexScreener Error: ${errorText}`, 'error');
+          throw new Error(`DexScreener API error: ${response.status} - ${errorText}`);
+        }
+        
+        const data = await response.json();
+        const pairCount = data.pairs ? data.pairs.length : 0;
+        log(`✅ Found ${pairCount} trading pairs`, 'success');
+        
+        if (pairCount === 0) {
+          log('⚠️ Warning: No trading pairs found for this token', 'error');
+        }
+        
+        return data;
+        
+      } catch (err) {
+        log(`💥 DexScreener Fetch Failed: ${err.message}`, 'error');
+        throw err;
+      }
+    }
+    function parseMarkdownToHtml(text) {
+      if (!text) return '';
+      
+      // Remove horizontal rules (--- or *** or ___)
+      text = text.replace(/^[-*_]{3,}$/gm, '');
+      
+      // Convert bold text (**text** or __text__)
+      text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      text = text.replace(/__(.*?)__/g, '<strong>$1</strong>');
+      
+      // Convert italic text (*text* or _text_)
+      text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+      text = text.replace(/_(.*?)_/g, '<em>$1</em>');
+      
+      // Convert inline code (`code`)
+      text = text.replace(/`([^`]+)`/g, '<code style="background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; font-family: JetBrains Mono, monospace;">$1</code>');
+      
+      // Clean up extra whitespace and empty lines
+      text = text.replace(/\n\s*\n\s*\n/g, '\n\n');
+      text = text.replace(/^\s+|\s+$/g, '');
+      
+      return text;
+    }
+
+    function formatAnalysis(text) {
+      console.log("🔄 Formatting analysis:", text);
+      
+      if (!text || text.trim().length === 0) {
+        return `
+          <div class="analysis-section">
+            <div class="section-title">⚠️ Analysis Error</div>
+            <div class="section-content">No analysis received from Dobby AI. Please try again.</div>
+          </div>
+        `;
+      }
+
+      // Parse markdown formatting first
+      text = parseMarkdownToHtml(text);
+      
+      // Handle simple responses without structured sections
+      if (!text.includes('1.') && !text.includes('Token Overview') && !text.includes('##')) {
+        return `
+          <div class="analysis-section">
+            <div class="section-title">🧙‍♂️ Dobby's Analysis</div>
+            <div class="section-content">${text.replace(/\n/g, '<br>')}</div>
+          </div>
+        `;
+      }
+      
+      // Try to parse structured content
+      const lines = text.split('\n').filter(line => line.trim());
+      let formattedHtml = '';
+      let currentSection = '';
+      let currentContent = [];
+      
+      for (let line of lines) {
+        const trimmed = line.trim();
+        
+        // Check if this is a section header
+        if (trimmed.match(/^\d+\.?\s*(Token Overview|Liquidity Analysis|Trading Volume|Price Performance|Red Flags|Final Verdict)/i) ||
+            trimmed.match(/^#{1,3}\s*(.+)/)) {
+          
+          // Save previous section if exists
+          if (currentSection && currentContent.length > 0) {
+            const verdictClass = currentSection.toLowerCase().includes('verdict') ? 
+              getVerdictClass(currentContent.join(' ')) : '';
+            
+            if (verdictClass) {
+              formattedHtml += `
+                <div class="verdict-card verdict-${verdictClass}">
+                  <div class="section-title">${currentSection}</div>
+                  <div class="section-content">${currentContent.join('<br>')}</div>
+                </div>
+              `;
+            } else {
+              formattedHtml += `
+                <div class="analysis-section">
+                  <div class="section-title">${currentSection}</div>
+                  <div class="section-content">${currentContent.join('<br>')}</div>
+                </div>
+              `;
+            }
+          }
+          
+          // Start new section
+          currentSection = trimmed.replace(/^\d+\.?\s*/, '').replace(/^#{1,3}\s*/, '');
+          currentContent = [];
+        } else if (trimmed) {
+          // Add to current content
+          currentContent.push(trimmed);
+        }
+      }
+      
+      // Don't forget the last section
+      if (currentSection && currentContent.length > 0) {
+        const verdictClass = currentSection.toLowerCase().includes('verdict') ? 
+          getVerdictClass(currentContent.join(' ')) : '';
+        
+        if (verdictClass) {
+          formattedHtml += `
+            <div class="verdict-card verdict-${verdictClass}">
+              <div class="section-title">${currentSection}</div>
+              <div class="section-content">${currentContent.join('<br>')}</div>
+            </div>
+          `;
+        } else {
+          formattedHtml += `
+            <div class="analysis-section">
+              <div class="section-title">${currentSection}</div>
+              <div class="section-content">${currentContent.join('<br>')}</div>
+            </div>
+          `;
+        }
+      }
+      
+      return formattedHtml || `
+        <div class="analysis-section">
+          <div class="section-title">🧙‍♂️ Dobby's Analysis</div>
+          <div class="section-content">${text.replace(/\n/g, '<br>')}</div>
+        </div>
+      `;
+    }
+
+    function getVerdictClass(content) {
+      const lower = content.toLowerCase();
+      if (lower.includes('buy') && !lower.includes("don't buy") && !lower.includes("not buy")) {
+        return 'buy';
+      } else if (lower.includes('hold')) {
+        return 'hold';
+      } else if (lower.includes('avoid') || lower.includes('sell') || lower.includes('stay away')) {
+        return 'avoid';
+      }
+      return 'hold';
+    }
+
+    async function typewriterEffect(element, html) {
+      element.style.opacity = '0';
+      element.style.transform = 'translateY(20px)';
+      
+      setTimeout(() => {
+        element.innerHTML = html;
+        element.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+        element.style.opacity = '1';
+        element.style.transform = 'translateY(0px)';
+      }, 200);
+    }
+
+    async function analyze() {
+      const tokenAddress = document.getElementById("tokenInput").value.trim();
+      const output = document.getElementById("output");
+      const button = document.getElementById("analyzeBtn");
+      
+      if (!tokenAddress) {
+        log("❌ No token address provided", 'error');
+        output.innerHTML = `
+          <div class="loading-state">
+            <div style="color: #ef4444; font-size: 3rem;">❌</div>
+            <div class="loading-text" style="color: #ef4444;">Token Address Required</div>
+            <div class="loading-subtext">Please enter a valid Solana token address</div>
+          </div>
+        `;
+        return;
+      }
+
+      button.disabled = true;
+      button.innerHTML = '<div class="loading-spinner" style="width: 20px; height: 20px; margin: 0 10px 0 0; display: inline-block;"></div>ANALYZING...';
+      
+      output.innerHTML = `
+        <div class="loading-state">
+          <div class="loading-spinner"></div>
+          <div class="loading-text">Connecting to DexScreener</div>
+          <div class="loading-subtext">Fetching token data...</div>
+        </div>
+      `;
+
+      try {
+        log("🚀 Step 1: Fetching token data from DexScreener...");
+        
+        const tokenData = await fetchDexScreenerData(tokenAddress);
+
+        log("🧠 Step 2: Sending data to Dobby for analysis...");
+        output.innerHTML = `
+          <div class="loading-state">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Dobby Analyzing</div>
+            <div class="loading-subtext">Neural network processing token data...</div>
+          </div>
+        `;
+
+        const prompt = `You are Dobby, an expert Solana token analyst AI with advanced pattern recognition capabilities.
+
+TASK: Analyze this token data from DexScreener API and provide a comprehensive investment analysis.
+
+TOKEN DATA:
+${JSON.stringify(tokenData, null, 2)}
+
+ANALYSIS REQUIREMENTS:
+Provide exactly 6 sections in this order:
+
+1. Token Overview
+- Basic token info, name, symbol if available
+- Current price and market cap if available
+
+2. Liquidity Analysis  
+- Pool liquidity levels
+- DEX distribution
+- Liquidity depth assessment
+
+3. Trading Volume & Activity
+- Volume trends and patterns
+- Trading activity levels
+- Market participation
+
+4. Price Performance
+- Recent price movements
+- Volatility analysis
+- Historical performance if available
+
+5. Red Flags & Risks
+- Any concerning patterns
+- Potential risks or warnings
+- Market manipulation signs
+
+6. Final Verdict
+- Clear recommendation: BUY, HOLD, or AVOID
+- Confidence level
+- Key reasoning
+
+IMPORTANT: 
+- Be direct and specific
+- Use clear section headers
+- Give actionable insights
+- Keep each section focused and concise
+- Use markdown formatting for readability
+- Provide ONE final verdict only
+- End final verdict with "\nANALYSIS COMPLETE"
+- Stop after the final verdict
+- Do not repeat responses`;
+
+
+        log(`📤 Sending analysis request to Dobby (${prompt.length} characters)`);
+       // console.log("🧾 Full Prompt:\n", prompt);
+
+
+        const response = await fetch("https://api.fireworks.ai/inference/v1/completions", {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${DOBBY_KEY}`
+            },
+            body: JSON.stringify({
+                model: "accounts/sentientfoundation-serverless/models/dobby-mini-unhinged-plus-llama-3-1-8b",
+                max_tokens: 1400,
+                top_p: 0.8,
+                top_k: 40,
+                presence_penalty: 0.2,
+                frequency_penalty: 0.2,
+                temperature: 0.3,
+                prompt: prompt,
+                stop: ["\nANALYSIS COMPLETE"]
+                
+          })
+        });
+
+        log(`📨 Dobby Response Status: ${response.status} ${response.statusText}`);
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          log(`💥 Dobby API Error: ${errorText}`, 'error');
+          throw new Error(`Dobby API error: ${response.status} - ${errorText}`);
+        }
+
+        const data = await response.json();
+        log("🎉 Analysis completed successfully!", 'success');
+        
+        // Enhanced response parsing - try multiple possible response structures
+        let analysis = '';
+        
+        if (data.choices && data.choices[0]) {
+          if (data.choices[0].text) {
+            analysis = data.choices[0].text.trim();
+          } else if (data.choices[0].message && data.choices[0].message.content) {
+            analysis = data.choices[0].message.content.trim();
+          }
+        } else if (data.text) {
+          analysis = data.text.trim();
+        } else if (data.response) {
+          analysis = data.response.trim();
+        } else if (data.content) {
+          analysis = data.content.trim();
+        }
+        
+        console.log("🔍 Raw API response structure:", data);
+        console.log("📝 Extracted analysis:", analysis);
+        
+        if (!analysis || analysis.length < 10) {
+          log(`❌ Invalid analysis response. Raw data: ${JSON.stringify(data).substring(0, 200)}...`, 'error');
+          throw new Error(`Empty or invalid analysis response. Length: ${analysis?.length || 0}`);
+        }
+        
+        const formattedAnalysis = formatAnalysis(analysis);
+        
+        await typewriterEffect(output, `
+          <div style="text-align: center; margin-bottom: 2rem;">
+            <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 1rem; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+              🧙‍♂️ Analysis Complete
+            </h2>
+            <div style="height: 3px; background: var(--primary-gradient); margin: 0 auto; width: 100px; border-radius: 3px; animation: pulse 2s infinite;"></div>
+          </div>
+          ${formattedAnalysis}
+        `);
+
+        document.getElementById("debugOutput").style.display = 'none';
+
+      } catch (err) {
+        log(`💥 Analysis failed: ${err.message}`, 'error');
+        output.innerHTML = `
+          <div class="loading-state">
+            <div style="color: #ef4444; font-size: 3rem;">⚠️</div>
+            <div class="loading-text" style="color: #ef4444;">Analysis Failed</div>
+            <div class="loading-subtext">${err.message}<br><br>Check debug panel for details</div>
+          </div>
+        `;
+      } finally {
+        button.disabled = false;
+        button.innerHTML = '⚡ ANALYZE';
+      }
+    }
+
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', function() {
+      // Add enter key support
+      document.getElementById('tokenInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !document.getElementById('analyzeBtn').disabled) {
+          analyze();
+        }
+      });
+
+      // Add input validation and formatting
+      document.getElementById('tokenInput').addEventListener('input', function(e) {
+        const value = e.target.value.trim();
+        // Basic Solana address validation (base58, ~44 chars)
+        if (value.length > 0) {
+          if (value.length < 32 || value.length > 44) {
+            e.target.style.borderColor = '#ef4444';
+          } else {
+            e.target.style.borderColor = '#10b981';
+          }
+        } else {
+          e.target.style.borderColor = 'transparent';
+        }
+      });
+      
+      // Focus input on page load
+      document.getElementById('tokenInput').focus();
+    });
+  </script>
+</body>
+</html>
